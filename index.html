@@ -96,6 +96,14 @@
                 <span class="menu-icon">📱</span>
                 <span>แชร์เว็บ</span>
             </button>
+            <button class="slide-menu-item" id="menuExportBackup">
+                <span class="menu-icon">💾</span>
+                <span>สำรองข้อมูล</span>
+            </button>
+            <button class="slide-menu-item" id="menuImportBackup">
+                <span class="menu-icon">📂</span>
+                <span>กู้คืนข้อมูล</span>
+            </button>
             <button class="slide-menu-item user-only" id="menuAdminLogin">
                 <span class="menu-icon">🔐</span>
                 <span>เข้าหน้า Admin</span>
@@ -106,6 +114,8 @@
             </button>
         </div>
     </div>
+
+    <input type="file" id="backupImportInput" accept="application/json,.json" hidden>
 
     <main class="main-content">
         <div id="mainAppView">

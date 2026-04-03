@@ -53,6 +53,7 @@ export class App {
         this.mainAppView = document.getElementById('mainAppView');
         this.historyPageSection = document.getElementById('historyPageSection');
         this.historyList = document.getElementById('historyList');
+        this.backupImportInput = document.getElementById('backupImportInput');
         this.currentView = 'main';
 
         this.playerRoster = [];
@@ -164,6 +165,8 @@ export class App {
         document.getElementById('addCourtBtn').addEventListener('click', () => this.addCourt());
         document.getElementById('clearHistoryBtn').addEventListener('click', () => this.clearHistory());
         document.getElementById('historyBackBtn')?.addEventListener('click', () => this.showMainPage());
+        document.getElementById('menuExportBackup')?.addEventListener('click', () => this.exportBackup());
+        document.getElementById('menuImportBackup')?.addEventListener('click', () => this.openImportBackup());
         this.playerRosterSearchBtn?.addEventListener('click', () => this.applyRosterSearch());
         this.playerRosterSearchInput?.addEventListener('keydown', (e) => {
             if (e.key === 'Enter') {
@@ -206,6 +209,13 @@ export class App {
             } else if (action === 'remove-player') {
                 this.removeRosterPlayer(playerId);
             }
+        });
+
+        this.backupImportInput?.addEventListener('change', async (e) => {
+            const file = e.target.files?.[0];
+            if (!file) return;
+            await this.importBackupFile(file);
+            e.target.value = '';
         });
 
         this.adminMobileTabs?.addEventListener('click', (e) => {
@@ -513,18 +523,111 @@ export class App {
         });
     }
 
-    // =============================
-    // State Management
-    // =============================
+    _closeSlideMenu() {
+        document.getElementById('slideMenu')?.classList.remove('show');
+        document.getElementById('slideMenuOverlay')?.classList.remove('show');
+        document.body.classList.remove('slide-menu-open');
+    }
 
-    _saveState() {
-        this.storage.save({
+    _createStateSnapshot() {
+        return {
             queue: this.queue.toJSON(),
             courts: this.courts.toJSON(),
             history: this.history.toJSON(),
             courtIdCounter: this.courts.nextId,
             roster: this._getRosterState(),
-        });
+        };
+    }
+
+    exportBackup() {
+        this._closeSlideMenu();
+
+        const backup = {
+            version: 1,
+            exportedAt: new Date().toISOString(),
+            source: window.location.href,
+            state: this._createStateSnapshot(),
+        };
+
+        const fileDate = new Date().toISOString().slice(0, 19).replace(/[:T]/g, '-');
+        const blob = new Blob([JSON.stringify(backup, null, 2)], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.download = `badminton-queue-backup-${fileDate}.json`;
+        document.body.appendChild(anchor);
+        anchor.click();
+        document.body.removeChild(anchor);
+        URL.revokeObjectURL(url);
+
+        this.toast.success('ดาวน์โหลดไฟล์สำรองข้อมูลแล้ว', '💾');
+    }
+
+    openImportBackup() {
+        this._closeSlideMenu();
+        this.backupImportInput?.click();
+    }
+
+    async importBackupFile(file) {
+        try {
+            const text = await file.text();
+            const parsed = JSON.parse(text);
+            const nextState = this._normalizeBackupState(parsed);
+
+            if (!nextState) {
+                this.toast.error('ไฟล์สำรองข้อมูลไม่ถูกต้อง');
+                return;
+            }
+
+            this.modal.show(
+                'กู้คืนข้อมูล',
+                `ต้องการกู้คืนข้อมูลจากไฟล์ "${file.name}" ใช่ไหม? ข้อมูลปัจจุบันจะถูกแทนที่ทั้งหมด`,
+                () => {
+                    this._clearCourtTimers();
+                    this.queue.loadFromData(nextState.queue);
+                    this.courts.loadFromData(nextState.courts, nextState.courtIdCounter);
+                    this.history.loadFromData(nextState.history);
+                    this._loadRosterState(nextState);
+                    this.selectedA = null;
+                    this.selectedB = null;
+                    this._render();
+                    this._resumeTimers();
+                    this._saveState();
+                    this.toast.success('กู้คืนข้อมูลสำเร็จ', '📂');
+                }
+            );
+        } catch (error) {
+            this.toast.error('อ่านไฟล์สำรองข้อมูลไม่สำเร็จ');
+        }
+    }
+
+    _normalizeBackupState(payload) {
+        const candidate = payload?.state ?? payload;
+        if (!candidate || typeof candidate !== 'object') {
+            return null;
+        }
+
+        if (!Array.isArray(candidate.queue) || !Array.isArray(candidate.courts) || !Array.isArray(candidate.history)) {
+            return null;
+        }
+
+        return {
+            queue: candidate.queue,
+            courts: candidate.courts,
+            history: candidate.history,
+            courtIdCounter: Number.isInteger(candidate.courtIdCounter) ? candidate.courtIdCounter : 1,
+            roster: candidate.roster && typeof candidate.roster === 'object'
+                ? candidate.roster
+                : { players: [], nextPlayerId: 1, todayAttendance: {} },
+        };
+    }
+
+    // =============================
+    // State Management
+    // =============================
+
+    _saveState() {
+        this.storage.save(this._createStateSnapshot());
     }
 
     async _loadState() {
