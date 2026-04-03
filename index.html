@@ -1,0 +1,389 @@
+<!DOCTYPE html>
+<html lang="th">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="ระบบเรียงคิวแบดมินตัน - จัดการคิวผู้เล่นและสนามแบดมินตันอย่างมีประสิทธิภาพ">
+    <title>🏸 Badminton Queue - ระบบเรียงคิวแบดมินตัน</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Prompt:wght@300;400;500;600;700;800&family=Lexend:wght@400;500;600;700;800&family=Inter:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="kinetic-theme.css">
+    <link rel="icon" href="data:,">
+
+    <!-- Supabase JS -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+    <!-- SortableJS (Drag and Drop) -->
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@latest/Sortable.min.js"></script>
+
+    <!-- QRCode -->
+    <script src="https://cdn.jsdelivr.net/npm/qrcode@1.5.4/build/qrcode.min.js"></script>
+</head>
+
+<body class="user-mode">
+    <!-- Animated Background -->
+    <div class="bg-animation">
+        <div class="shuttlecock s1">🏸</div>
+        <div class="shuttlecock s2">🏸</div>
+        <div class="shuttlecock s3">🏸</div>
+        <div class="shuttlecock s4">🏸</div>
+        <div class="shuttlecock s5">🏸</div>
+    </div>
+
+    <!-- Header -->
+    <header class="header">
+        <div class="header-content">
+            <div class="header-brand">
+                <div class="logo">
+                    <span class="logo-icon">🏸</span>
+                    <div class="logo-copy">
+                        <span class="header-kicker">Live Match Queue</span>
+                        <h1>คิวแบดเด็กมอรังสิต</h1>
+                        <p class="subtitle">แพ้เป็นพระ ชนะเป็นมั้ย</p>
+                    </div>
+                </div>
+                <div class="header-status-row">
+                    <div class="presence-status-badge local" id="viewerPresenceBadge" aria-live="polite">
+                        <span class="presence-status-dot"></span>
+                        <span class="presence-status-copy">
+                            <span class="presence-status-label">คนกำลังดู</span>
+                            <span class="presence-status-detail">เฉพาะเครื่องนี้</span>
+                        </span>
+                    </div>
+                    <div class="sync-status-badge local" id="syncStatusBadge" aria-live="polite">
+                        <span class="sync-status-dot"></span>
+                        <span class="sync-status-copy">
+                            <span class="sync-status-label">บันทึกในเครื่อง</span>
+                            <span class="sync-status-detail">อุปกรณ์นี้เท่านั้น</span>
+                        </span>
+                    </div>
+                </div>
+            </div>
+            <div class="header-right">
+                <div class="header-controls">
+                    <div class="mode-badge admin-only" id="modeBadge">
+                        🔐 Admin
+                    </div>
+                    <button class="hamburger-btn" id="hamburgerBtn" title="เมนู">
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                        <span class="hamburger-line"></span>
+                    </button>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Slide Menu -->
+    <div class="slide-menu-overlay" id="slideMenuOverlay"></div>
+    <div class="slide-menu" id="slideMenu">
+        <div class="slide-menu-header">
+            <h3>⚙️ เมนู</h3>
+            <button class="slide-menu-close" id="slideMenuClose">✕</button>
+        </div>
+        <div class="slide-menu-body">
+            <button class="slide-menu-item" id="menuHistoryToggle">
+                <span class="menu-icon">📜</span>
+                <span>ดูประวัติการเล่น</span>
+                <span class="menu-count-badge" id="menuHistoryCount">0</span>
+            </button>
+            <button class="slide-menu-item" id="menuShareWeb">
+                <span class="menu-icon">📱</span>
+                <span>แชร์เว็บ</span>
+            </button>
+            <button class="slide-menu-item user-only" id="menuAdminLogin">
+                <span class="menu-icon">🔐</span>
+                <span>เข้าหน้า Admin</span>
+            </button>
+            <button class="slide-menu-item admin-only" id="menuAdminLogout">
+                <span class="menu-icon">🚪</span>
+                <span>ออกจาก Admin</span>
+            </button>
+        </div>
+    </div>
+
+    <main class="main-content">
+        <div id="mainAppView">
+            <nav class="admin-mobile-tabs admin-only" id="adminMobileTabs" aria-label="Admin mobile sections">
+                <button class="admin-mobile-tab is-active" type="button" data-admin-mobile-tab="queue" aria-pressed="true">คิว</button>
+                <button class="admin-mobile-tab" type="button" data-admin-mobile-tab="courts" aria-pressed="false">สนาม</button>
+                <button class="admin-mobile-tab" type="button" data-admin-mobile-tab="tools" aria-pressed="false">สมาชิก</button>
+            </nav>
+            <div class="grid-layout">
+                <!-- Courts Section -->
+                <section class="section courts-section" data-admin-mobile-panel="courts">
+                    <div class="section-header">
+                        <div class="section-heading">
+                            <span class="section-kicker">Live Courts</span>
+                            <h2>🏟️ สนาม</h2>
+                            <p class="section-description">ติดตามสถานะสนามแบบสด ดูว่าใครกำลังเล่นและสนามไหนพร้อมใช้งาน</p>
+                        </div>
+                        <button class="btn btn-sm btn-outline admin-only" id="addCourtBtn">
+                            <span>+ เพิ่มสนาม</span>
+                        </button>
+                    </div>
+                    <div class="courts-grid" id="courtsGrid">
+                    </div>
+                </section>
+
+                <!-- Queue Section -->
+                <section class="section queue-section">
+                    <div class="section-header" data-admin-mobile-queue-header>
+                        <div class="section-heading">
+                            <span class="section-kicker">Ready Queue</span>
+                            <h2>📋 คิวรอเล่น</h2>
+                        </div>
+                        <div class="queue-header-side">
+                            <div id="queueCount">
+                                <span class="queue-count-title">ในคิวตอนนี้</span>
+                                <span class="queue-count-main">0 คน</span>
+                                <span class="queue-count-chip queue-count-chip-pair">0 คู่</span>
+                                <span class="queue-count-chip queue-count-chip-solo">0 เดี่ยว</span>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="section-header admin-only admin-mobile-tools-header" data-admin-mobile-tools-header hidden>
+                        <div class="section-heading">
+                            <span class="section-kicker">Admin Tools</span>
+                            <h2>🛠️ เครื่องมือจัดการ</h2>
+                            <p class="section-description">เพิ่มชื่อ จัดรายชื่อ และเช็กอินผู้เล่นสำหรับวันนี้</p>
+                        </div>
+                    </div>
+                    <div class="admin-mobile-tools-panel" data-admin-mobile-panel="tools">
+                    <!-- Add Player Section (Admin Only) -->
+                    <div class="queue-control-bar admin-only">
+                        <div class="add-player-form">
+                            <div class="input-group">
+                                <input type="text" id="playerNameInput" placeholder="พิมพ์ชื่อผู้เล่น..." autocomplete="off"
+                                    maxlength="30">
+                                <select id="playerSkillInput" aria-label="เลือกระดับฝีมือผู้เล่น">
+                                    <option value="BG">มือ BG</option>
+                                    <option value="N" selected>มือ N</option>
+                                    <option value="S">มือ S</option>
+                                    <option value="P">มือ P</option>
+                                </select>
+                                <button id="addPlayerBtn" class="btn btn-primary">
+                                    <span class="btn-icon">➕</span>
+                                    <span>เพิ่มเข้ารายชื่อ</span>
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="today-player-pool admin-only">
+                        <div class="today-player-pool-header">
+                            <span class="section-kicker">Today Check-in</span>
+                            <p class="today-player-pool-description">เลือกนักกีฬาจากรายชื่อ แล้วเพิ่มเข้าคิวรอเล่นของวันนี้ได้ทันที</p>
+                        </div>
+                        <div class="roster-search-bar">
+                            <input type="text" id="playerRosterSearchInput" placeholder="ค้นหานักกีฬา..." autocomplete="off" maxlength="30">
+                            <button class="btn btn-outline btn-sm" id="playerRosterSearchBtn">
+                                <span>🔍 ค้นหา</span>
+                            </button>
+                        </div>
+                        <div class="player-roster-list" id="playerRosterList">
+                            <div class="empty-state compact">
+                                <p>ยังไม่มีรายชื่อนักกีฬา</p>
+                            </div>
+                        </div>
+                    </div>
+                    </div>
+                    <div class="admin-mobile-queue-panel" data-admin-mobile-panel="queue">
+                    <div class="queue-list" id="queueList">
+                        <div class="empty-state">
+                            <span class="empty-icon">🎯</span>
+                            <p>ยังไม่มีคนในคิว</p>
+                            <p class="empty-sub">เพิ่มชื่อผู้เล่นด้านบนเพื่อเข้าคิว</p>
+                        </div>
+                    </div>
+                    <div class="queue-actions admin-only" id="queueActions" style="display: none;">
+                        <button class="btn btn-success" id="sendToCourtBtn">
+                            <span class="btn-icon">👆</span>
+                            <span>คลิกเลือก 2 คู่เพื่อส่งลงสนาม</span>
+                        </button>
+                        <button class="btn btn-outline btn-clear-selection" id="clearSelectionBtn" style="display: none;">
+                            <span>✖ ยกเลิกเลือก</span>
+                        </button>
+                    </div>
+                    </div>
+                </section>
+            </div>
+        </div>
+
+        <!-- History Section -->
+        <section class="section history-section history-page-section" id="historyPageSection" style="display: none;">
+            <div class="section-header history-page-header">
+                <div class="history-page-title">
+                    <button class="btn btn-outline" id="historyBackBtn">
+                        <span>← กลับ</span>
+                    </button>
+                    <div class="section-heading">
+                        <span class="section-kicker">Match Log</span>
+                        <h2>📜 ประวัติการเล่น</h2>
+                        <p class="section-description">ดูผลการแข่งขันย้อนหลังและการเปลี่ยนแปลงล่าสุดของคอร์ททั้งหมด</p>
+                    </div>
+                </div>
+                <button class="btn btn-sm btn-outline admin-only" id="clearHistoryBtn" style="display: none;">
+                    <span>🗑️ ล้างประวัติ</span>
+                </button>
+            </div>
+            <div class="history-list" id="historyList">
+                <div class="empty-state">
+                    <span class="empty-icon">📝</span>
+                    <p>ยังไม่มีประวัติการเล่น</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+
+    <!-- Confirmation Modal -->
+    <div class="modal-overlay" id="modalOverlay">
+        <div class="modal">
+            <div class="modal-header">
+                <h3 id="modalTitle">ยืนยัน</h3>
+            </div>
+            <div class="modal-body">
+                <p id="modalMessage"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="modalCancelBtn">ยกเลิก</button>
+                <button class="btn btn-danger" id="modalConfirmBtn">ยืนยัน</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Player Picker Modal -->
+    <div class="modal-overlay" id="playerPickerOverlay">
+        <div class="modal player-picker-modal">
+            <div class="modal-header">
+                <h3 id="pickerTitle">เลือกผู้เล่น</h3>
+            </div>
+            <div class="modal-body">
+                <p id="pickerMessage"></p>
+                <div class="picker-search">
+                    <input type="text" id="pickerSearchInput" placeholder="พิมพ์ชื่อเพื่อค้นหา..." autocomplete="off">
+                </div>
+                <div class="player-picker-list" id="pickerList">
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="pickerCancelBtn">ยกเลิก</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="playerRenameOverlay">
+        <div class="modal player-rename-modal">
+            <div class="modal-header">
+                <h3 id="playerRenameTitle">แก้ชื่อผู้เล่น</h3>
+            </div>
+            <div class="modal-body">
+                <p id="playerRenameMessage"></p>
+                <div class="player-rename-input-group">
+                    <input type="text" id="playerRenameInput" placeholder="พิมพ์ชื่อใหม่..." autocomplete="off" maxlength="30">
+                </div>
+                <div class="player-rename-input-group player-rename-skill-group" id="playerRenameSkillGroup" hidden>
+                    <select id="playerRenameSkillInput">
+                        <option value="BG">มือ BG</option>
+                        <option value="N">มือ N</option>
+                        <option value="S">มือ S</option>
+                        <option value="P">มือ P</option>
+                    </select>
+                </div>
+                <p class="player-rename-error" id="playerRenameError" style="display: none;"></p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="playerRenameCancelBtn">ยกเลิก</button>
+                <button class="btn btn-primary" id="playerRenameConfirmBtn">บันทึกชื่อ</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="shareWebOverlay">
+        <div class="modal share-web-modal">
+            <div class="modal-header">
+                <h3>📱 แชร์เว็บให้เพื่อน</h3>
+            </div>
+            <div class="modal-body">
+                <p id="shareWebMessage"></p>
+                <div class="share-web-qr-card">
+                    <canvas id="shareWebQrCanvas" width="220" height="220"></canvas>
+                    <img id="shareWebQrImage" alt="QR Code สำหรับแชร์เว็บ" style="display: none;" />
+                    <div class="share-web-qr-fallback" id="shareWebQrFallback" style="display: none;">สร้าง QR ไม่สำเร็จ กรุณาใช้ลิงก์ด้านล่างแทน</div>
+                </div>
+                <div class="share-web-link-group">
+                    <span class="share-web-link-label">ลิงก์สำหรับแชร์</span>
+                    <a class="share-web-link" id="shareWebUrl" href="https://qbadbyfeeling.netlify.app" target="_blank" rel="noopener noreferrer">https://qbadbyfeeling.netlify.app</a>
+                </div>
+            </div>
+            <div class="modal-actions share-web-actions">
+                <button class="btn btn-outline" id="shareWebCloseBtn">ปิด</button>
+                <button class="btn btn-primary" id="shareWebCopyBtn">คัดลอกลิงก์</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="modal-overlay" id="courtSwapOverlay">
+        <div class="modal court-swap-modal">
+            <div class="modal-header">
+                <h3 id="courtSwapTitle">🔀 สลับตัว</h3>
+            </div>
+            <div class="modal-body">
+                <p id="courtSwapMessage"></p>
+                <div class="court-swap-groups">
+                    <div class="court-swap-team">
+                        <div class="court-swap-team-title team-a">ฝั่ง A</div>
+                        <div class="court-swap-team-list" id="courtSwapTeamAList"></div>
+                    </div>
+                    <div class="court-swap-team">
+                        <div class="court-swap-team-title team-b">ฝั่ง B</div>
+                        <div class="court-swap-team-list" id="courtSwapTeamBList"></div>
+                    </div>
+                </div>
+                <div class="court-swap-preview">
+                    <div class="court-swap-preview-label">ตัวอย่างหลังสลับ</div>
+                    <div class="court-swap-preview-value" id="courtSwapPreview">เลือก 1 คนจากแต่ละฝั่ง</div>
+                </div>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="courtSwapCancelBtn">ยกเลิก</button>
+                <button class="btn btn-primary" id="courtSwapConfirmBtn" disabled>ยืนยันสลับ</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Admin Password Modal -->
+    <div class="modal-overlay" id="adminPasswordOverlay">
+        <div class="modal admin-password-modal">
+            <div class="modal-header">
+                <h3>🔐 เข้าหน้า Admin</h3>
+            </div>
+            <div class="modal-body">
+                <p>กรุณาใส่รหัสเพื่อเข้าหน้า Admin</p>
+                <div class="password-input-group">
+                    <input type="password" id="adminPasswordInput" placeholder="ใส่รหัส..." autocomplete="off">
+                </div>
+                <p class="password-error" id="passwordError" style="display: none;">❌ รหัสไม่ถูกต้อง</p>
+            </div>
+            <div class="modal-actions">
+                <button class="btn btn-outline" id="adminPasswordCancel">ยกเลิก</button>
+                <button class="btn btn-primary" id="adminPasswordConfirm">เข้าสู่ระบบ</button>
+            </div>
+        </div>
+    </div>
+
+    <footer class="footer">
+        <p>🏸 Badminton Queue System &copy; 2026</p>
+    </footer>
+
+    <script type="module" src="js/main.js"></script>
+</body>
+
+</html>

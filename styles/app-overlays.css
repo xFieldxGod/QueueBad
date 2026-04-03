@@ -1,0 +1,1594 @@
+﻿/* ===== Toast ===== */
+.toast-container {
+    position: fixed;
+    top: 86px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 1400;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    width: min(92vw, 540px);
+    pointer-events: none;
+}
+
+.toast {
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.96);
+    border: 1px solid rgba(15, 23, 42, 0.08);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    box-shadow: 0 18px 44px rgba(15, 23, 42, 0.14);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
+    animation: toastIn 0.36s cubic-bezier(0.22, 1, 0.36, 1);
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    width: 100%;
+    max-width: 100%;
+    pointer-events: auto;
+}
+
+.toast-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.toast-content {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    width: 100%;
+    min-width: 0;
+}
+
+.toast-message {
+    flex: 1;
+    min-width: 0;
+    width: 100%;
+    color: #1f2937;
+    font-size: 0.92rem;
+    font-weight: 700;
+    line-height: 1.35;
+    overflow-wrap: anywhere;
+}
+
+.toast-meta {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    justify-content: space-between;
+}
+
+.toast-timing {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 100%;
+}
+
+.toast-expiry-text {
+    font-size: 0.7rem;
+    font-weight: 600;
+    color: #6b7280;
+}
+
+.toast-progress-track {
+    width: 100%;
+    height: 4px;
+    border-radius: 999px;
+    background: rgba(148, 163, 184, 0.22);
+    overflow: hidden;
+}
+
+.toast-progress-bar {
+    width: 100%;
+    height: 100%;
+    border-radius: inherit;
+    background: linear-gradient(90deg, rgba(139, 92, 246, 0.95), rgba(59, 130, 246, 0.95));
+    transition: width 0.1s linear;
+}
+
+.toast-action {
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 999px;
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.8rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    flex-shrink: 0;
+}
+
+.toast-action:hover {
+    background: rgba(255, 255, 255, 0.14);
+    border-color: rgba(255, 255, 255, 0.22);
+}
+
+.toast.success {
+    border-color: rgba(16, 185, 129, 0.22);
+    background: linear-gradient(135deg, rgba(236, 253, 245, 0.98), rgba(255, 255, 255, 0.96));
+}
+
+.toast.error {
+    border-color: rgba(239, 68, 68, 0.22);
+    background: linear-gradient(135deg, rgba(254, 242, 242, 0.98), rgba(255, 255, 255, 0.96));
+}
+
+.toast.info {
+    border-color: rgba(59, 130, 246, 0.2);
+    background: linear-gradient(135deg, rgba(239, 246, 255, 0.98), rgba(255, 255, 255, 0.96));
+}
+
+@keyframes toastIn {
+    from { opacity: 0; transform: translateY(-26px) scale(0.98); }
+    to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
+@keyframes toastOut {
+    from { opacity: 1; transform: translateY(0) scale(1); }
+    to { opacity: 0; transform: translateY(-22px) scale(0.98); }
+}
+
+/* ===== Modal ===== */
+.modal-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(6px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+}
+
+.modal-overlay.active {
+    display: flex;
+}
+
+.modal {
+    background: var(--bg-card);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: 28px;
+    max-width: 400px;
+    width: 90%;
+    animation: modalIn 0.3s ease-out;
+}
+
+@keyframes modalIn {
+    from { opacity: 0; transform: scale(0.9) translateY(20px); }
+    to { opacity: 1; transform: scale(1) translateY(0); }
+}
+
+.modal-header h3 {
+    font-size: 1.1rem;
+    font-weight: 600;
+    margin-bottom: 12px;
+}
+
+.modal-body p {
+    color: var(--text-secondary);
+    font-size: 0.9rem;
+    line-height: 1.5;
+}
+
+.modal-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    margin-top: 20px;
+}
+
+.send-to-court-modal {
+    max-width: 460px;
+    padding: 0;
+    overflow: hidden;
+}
+
+.send-to-court-overlay {
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 16px !important;
+}
+
+.send-to-court-modal .modal-header {
+    padding: 26px 28px 8px;
+    text-align: center;
+}
+
+.send-to-court-modal .modal-header h3 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    margin-bottom: 0;
+}
+
+.send-to-court-modal .modal-body {
+    padding: 0 28px 18px;
+}
+
+.send-to-court-modal .modal-body p {
+    text-align: center;
+    font-size: 0.98rem;
+    line-height: 1.75;
+}
+
+.send-to-court-modal .modal-actions {
+    padding: 18px 28px 28px;
+    margin-top: 0;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column-reverse;
+    border-top: 1px solid rgba(15, 23, 42, 0.08);
+    background:
+        radial-gradient(circle at top, rgba(37, 99, 235, 0.09), transparent 55%),
+        linear-gradient(180deg, rgba(248, 250, 252, 0.92), rgba(255, 255, 255, 1));
+}
+
+.send-to-court-modal .modal-actions .btn {
+    width: 100%;
+    max-width: 320px;
+    min-height: 52px;
+    font-size: 1rem;
+    font-weight: 700;
+}
+
+.player-rename-modal {
+    max-width: 460px;
+}
+
+.player-rename-input-group {
+    margin-top: 16px;
+}
+
+.player-rename-input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.player-rename-input-group input:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-glow);
+}
+
+.player-rename-input-group input::placeholder {
+    color: var(--text-muted);
+}
+
+.player-rename-input-group select {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    outline: none;
+    transition: border-color var(--transition-fast), box-shadow var(--transition-fast);
+}
+
+.player-rename-input-group select:focus {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px var(--accent-primary-glow);
+}
+
+.player-rename-error {
+    margin-top: 10px;
+    color: #f87171 !important;
+    font-size: 0.84rem !important;
+}
+
+/* ===== Footer ===== */
+.footer {
+    text-align: center;
+    padding: 24px;
+    color: var(--text-muted);
+    font-size: 0.8rem;
+    position: relative;
+    z-index: 1;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 768px) {
+    .header-content {
+        padding: 12px 14px;
+        gap: 10px;
+    }
+
+    .logo {
+        gap: 10px;
+        min-width: 0;
+    }
+
+    .header-kicker {
+        font-size: 0.62rem;
+        padding: 4px 8px;
+    }
+
+    .logo h1 {
+        font-size: 1.05rem;
+        line-height: 1.2;
+    }
+
+    .logo-icon {
+        width: 46px;
+        height: 46px;
+        border-radius: 14px;
+        font-size: 1.75rem;
+    }
+
+    .subtitle {
+        font-size: 0.72rem;
+    }
+
+    .header-content {
+        align-items: flex-start;
+    }
+
+    .logo {
+        width: 100%;
+    }
+
+    .header-brand {
+        width: 100%;
+    }
+
+    .header-status-row {
+        width: 100%;
+    }
+
+    .header-right {
+        width: 100%;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .header-controls {
+        order: 4;
+        margin-left: auto;
+    }
+
+    .header-stats {
+        flex: 1 1 100%;
+        gap: 8px;
+        order: 3;
+    }
+
+    .stat-badge {
+        min-width: 0;
+        border-radius: 14px;
+    }
+
+    .presence-status-badge,
+    .sync-status-badge {
+        flex: 0 1 auto;
+        width: auto;
+        max-width: calc(50% - 6px);
+        min-width: 0;
+        order: 1;
+        gap: 8px;
+        padding: 6px 10px;
+        border-radius: 12px;
+    }
+
+    .mode-badge {
+        order: initial;
+    }
+
+    .hamburger-btn {
+        order: initial;
+        margin-left: 0;
+    }
+
+    .main-content {
+        padding: 12px;
+        gap: 12px;
+    }
+
+    .section {
+        padding: 16px;
+        border-radius: 14px;
+    }
+
+    .section-header {
+        margin-bottom: 14px;
+        gap: 10px;
+    }
+
+    .section-header h2 {
+        font-size: 1.02rem;
+    }
+
+    .section-description {
+        font-size: 0.78rem;
+    }
+
+    .grid-layout {
+        grid-template-columns: 1fr;
+        gap: 12px;
+    }
+
+    .queue-section,
+    .courts-section {
+        grid-column: auto;
+        grid-row: auto;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    .input-group select {
+        width: 100%;
+        min-height: 48px;
+    }
+
+    .input-group input {
+        min-height: 48px;
+        padding: 14px 16px;
+    }
+
+    .input-group .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 48px;
+    }
+
+    .btn {
+        min-height: 46px;
+        justify-content: center;
+        white-space: normal;
+        line-height: 1.3;
+        text-align: center;
+    }
+
+    .btn-sm {
+        min-height: 40px;
+        padding: 9px 14px;
+    }
+
+    .queue-actions {
+        position: sticky;
+        bottom: calc(12px + env(safe-area-inset-bottom));
+        flex-direction: column;
+        gap: 10px;
+        margin-top: 16px;
+        padding: 12px;
+        border: 1px solid var(--border-color);
+        border-radius: 14px;
+        background: rgba(10, 14, 26, 0.88);
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+        box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+    }
+
+    .queue-actions .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .queue-list,
+    .history-list {
+        max-height: none;
+        overflow: visible;
+    }
+
+    .queue-item {
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+        padding: 12px;
+    }
+
+    .roster-item {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .roster-search-bar {
+        flex-direction: column;
+    }
+
+    .roster-search-bar .btn {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .roster-actions {
+        width: 100%;
+        justify-content: flex-start;
+    }
+
+    .drag-handle {
+        padding: 8px 6px;
+        margin-right: 0;
+    }
+
+    .queue-number {
+        width: 30px;
+        height: 30px;
+    }
+
+    .queue-item-shell {
+        flex: 1 1 calc(100% - 60px);
+        flex-wrap: wrap;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .queue-main {
+        flex: 1 1 100%;
+    }
+
+    .queue-icon {
+        width: 32px;
+        height: 32px;
+        border-radius: 10px;
+        font-size: 0.86rem;
+    }
+
+    .queue-topline,
+    .queue-meta {
+        gap: 6px;
+    }
+
+    .queue-topline {
+        width: 100%;
+    }
+
+    .queue-name {
+        min-width: 0;
+        overflow-wrap: anywhere;
+    }
+
+    .team-badge {
+        margin-top: 2px;
+    }
+
+    .queue-type-badge,
+    .queue-time {
+        min-height: 22px;
+        font-size: 0.62rem;
+    }
+
+    .queue-item-actions {
+        width: 100%;
+        padding-left: 40px;
+        justify-content: flex-start;
+        gap: 6px;
+    }
+
+    .queue-item-actions .btn-action {
+        flex: 0 0 auto;
+        min-height: 30px;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        font-size: 0.68rem;
+    }
+
+    .stat-badge {
+        flex: 1;
+        min-width: 0;
+        padding: 8px 10px;
+    }
+
+    .stat-number {
+        font-size: 1rem;
+    }
+
+    .stat-label {
+        font-size: 0.6rem;
+        letter-spacing: 0.6px;
+    }
+
+    .mode-badge {
+        padding: 6px 10px;
+        font-size: 0.72rem;
+    }
+
+    .sync-status-label,
+    .presence-status-label {
+        font-size: 0.7rem;
+    }
+
+    .sync-status-detail,
+    .presence-status-detail {
+        font-size: 0.58rem;
+        line-height: 1.1;
+    }
+
+    .sync-status-dot,
+    .presence-status-dot {
+        width: 8px;
+        height: 8px;
+    }
+
+    .hamburger-btn,
+    .slide-menu-close {
+        width: 44px;
+        height: 44px;
+    }
+
+    .court-actions {
+        padding: 0;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 6px;
+    }
+
+    .courts-section .section-header {
+        align-items: stretch;
+        gap: 12px;
+    }
+
+    .courts-section .section-heading {
+        gap: 6px;
+    }
+
+    .courts-section .section-description {
+        max-width: none;
+        line-height: 1.5;
+    }
+
+    .courts-section .section-header .btn {
+        width: 100%;
+    }
+
+    .courts-grid {
+        gap: 10px;
+    }
+
+    .court-card {
+        border-radius: 20px;
+    }
+
+    .court-header {
+        align-items: flex-start;
+        flex-direction: row;
+        flex-wrap: wrap;
+        padding: 16px 16px 12px;
+        gap: 10px;
+    }
+
+    .court-title {
+        width: auto;
+        flex: 1 1 180px;
+        min-width: 0;
+        align-items: flex-start;
+        gap: 10px;
+    }
+
+    .court-title-copy {
+        flex: 1;
+    }
+
+    .court-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 14px;
+        font-size: 1rem;
+    }
+
+    .court-name-row {
+        width: 100%;
+        justify-content: flex-start;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .court-name {
+        font-size: 0.96rem;
+        line-height: 1.2;
+    }
+
+    .court-card.active .court-name {
+        font-size: 1.02rem;
+    }
+
+    .court-state-chip {
+        min-height: 24px;
+        padding: 0 8px;
+        font-size: 0.54rem;
+    }
+
+    .court-side-meta {
+        width: auto;
+        justify-content: flex-end;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .court-side-meta > * {
+        min-height: 34px;
+        padding: 0 11px;
+    }
+
+    .court-status {
+        display: none;
+    }
+
+    .court-timer {
+        font-size: 0.82rem;
+        letter-spacing: 0.04em;
+    }
+
+    .court-card.active .court-timer {
+        font-size: 0.92rem;
+    }
+
+    .court-card.idle .court-timer,
+    .win-count {
+        font-size: 0.72rem;
+    }
+
+    .court-body.active,
+    .court-body.waiting {
+        grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+        padding: 0 16px 14px;
+        gap: 10px;
+    }
+
+    .court-body.idle {
+        grid-template-columns: 1fr;
+        padding: 0 16px 14px;
+        gap: 10px;
+    }
+
+    .court-team-column {
+        padding: 12px 10px;
+        gap: 7px;
+        border-radius: 18px;
+    }
+
+    .court-team-label {
+        font-size: 0.54rem;
+    }
+
+    .court-team-stack {
+        justify-content: center;
+        gap: 0;
+        row-gap: 4px;
+    }
+
+    .court-vs-pill {
+        width: auto;
+        min-width: 38px;
+        min-height: 38px;
+        padding: 0;
+        justify-self: center;
+        justify-content: center;
+        align-self: center;
+        font-size: 0.56rem;
+    }
+
+    .court-vs-pill::before,
+    .court-vs-pill::after {
+        display: none;
+    }
+
+    .court-footer {
+        padding: 12px 16px 16px;
+    }
+
+    .player-tag {
+        display: inline-flex;
+        width: auto;
+        padding: 0;
+        font-size: 0.82rem;
+        text-align: center;
+    }
+
+    .player-tag + .player-tag::before {
+        margin: 0 6px 0 4px;
+    }
+
+    .waiting-slot {
+        min-height: 44px;
+        gap: 4px;
+        border-radius: 12px;
+        font-size: 0.72rem;
+    }
+
+    .court-idle-copy {
+        min-height: 52px;
+    }
+
+    .court-actions .btn {
+        min-height: 44px;
+        width: 100%;
+        padding: 10px 10px;
+        font-size: 0.72rem;
+        line-height: 1.2;
+        white-space: normal;
+    }
+
+    .history-page-title {
+        width: 100%;
+        justify-content: space-between;
+        gap: 10px;
+    }
+
+    .history-page-title .section-heading {
+        flex: 1 1 220px;
+    }
+
+    .history-page-title h2 {
+        font-size: 1rem;
+    }
+
+    .history-page-section .history-list {
+        min-height: auto;
+    }
+
+    .history-item {
+        padding: 12px 14px;
+        gap: 8px;
+    }
+
+    .history-header-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .history-header-meta {
+        flex: 1;
+    }
+
+    .history-item-delete {
+        margin-left: auto;
+    }
+
+    .history-result-row {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 8px;
+        padding: 10px;
+    }
+
+    .history-result-badge {
+        min-width: 0;
+    }
+
+    .history-time {
+        text-align: left;
+    }
+
+    .slide-menu {
+        width: 92vw;
+        max-width: 360px;
+        right: -95vw;
+    }
+
+    .slide-menu-header {
+        padding: 18px 16px;
+    }
+
+    .slide-menu-body {
+        padding: 14px;
+    }
+
+    .slide-menu-item {
+        min-height: 52px;
+        padding: 16px;
+        margin-bottom: 10px;
+    }
+
+    .btn:hover,
+    .queue-item:hover,
+    .slide-menu-item:hover {
+        transform: none;
+    }
+
+    .modal {
+        width: calc(100% - 24px);
+        padding: 22px 18px;
+    }
+
+    .modal-actions {
+        flex-direction: column;
+    }
+
+    .modal-actions .btn {
+        width: 100%;
+    }
+
+    .send-to-court-modal {
+        width: min(100%, 420px);
+        max-width: 420px;
+    }
+
+    .send-to-court-modal .modal-header {
+        padding: 22px 18px 8px;
+    }
+
+    .send-to-court-modal .modal-body {
+        padding: 0 18px 16px;
+    }
+
+    .send-to-court-modal .modal-actions {
+        padding: 16px 18px 18px;
+    }
+
+    .send-to-court-overlay {
+        align-items: center !important;
+        justify-content: center !important;
+        padding: 16px !important;
+    }
+
+    .player-rename-input-group input {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .toast-container {
+        top: calc(96px + env(safe-area-inset-top));
+        left: 50%;
+        right: auto;
+        width: calc(100vw - 24px);
+    }
+
+    .toast {
+        max-width: 100%;
+    }
+
+    .bg-animation {
+        display: none;
+    }
+
+    .main-content {
+        padding: 12px 12px calc(24px + env(safe-area-inset-bottom));
+    }
+
+    body.admin-mobile-tabs-active .admin-mobile-tabs {
+        position: sticky;
+        top: 12px;
+        z-index: 30;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+        margin-bottom: 12px;
+        padding: 8px;
+        border: 1px solid rgba(129, 140, 248, 0.16);
+        border-radius: 18px;
+        background: linear-gradient(180deg, rgba(16, 23, 40, 0.96), rgba(12, 18, 30, 0.94));
+        box-shadow: 0 14px 28px rgba(15, 23, 42, 0.22);
+        backdrop-filter: blur(12px);
+    }
+
+    .admin-mobile-tab {
+        min-height: 42px;
+        padding: 10px 8px;
+        border: 1px solid rgba(148, 163, 184, 0.14);
+        border-radius: 14px;
+        background: rgba(255, 255, 255, 0.03);
+        color: var(--text-secondary);
+        font-family: var(--font-family);
+        font-size: 0.82rem;
+        font-weight: 700;
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+    }
+
+    .admin-mobile-tab.is-active {
+        background: linear-gradient(135deg, rgba(99, 102, 241, 0.24), rgba(59, 130, 246, 0.18));
+        border-color: rgba(129, 140, 248, 0.36);
+        color: var(--text-primary);
+        box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08);
+    }
+
+    .admin-mobile-tools-header {
+        margin-bottom: 12px;
+    }
+
+    .admin-mobile-tools-panel[hidden],
+    .admin-mobile-queue-panel[hidden],
+    [data-admin-mobile-panel="courts"][hidden] {
+        display: none !important;
+    }
+
+    .queue-section {
+        grid-row: 2;
+    }
+
+    .courts-section {
+        grid-row: 1;
+    }
+
+    .header-status-row {
+        width: 100%;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .header-right {
+        align-items: stretch;
+    }
+
+    .header-controls {
+        width: 100%;
+        justify-content: space-between;
+        margin-left: 0;
+    }
+
+    .presence-status-badge,
+    .sync-status-badge {
+        max-width: none;
+    }
+
+    .section-header {
+        align-items: stretch;
+    }
+
+    .queue-header-side,
+    #queueCount {
+        width: 100%;
+        min-width: 0;
+    }
+
+    #queueCount {
+        padding: 12px 14px;
+        border-radius: 18px;
+    }
+
+    .queue-control-bar,
+    .today-player-pool {
+        padding: 12px;
+        border-radius: 16px;
+    }
+
+    .player-roster-list {
+        max-height: min(42vh, 320px);
+        overflow-y: auto;
+        overflow-x: hidden;
+        padding-right: 4px;
+    }
+
+    .roster-item {
+        flex-direction: row;
+        align-items: center;
+        gap: 8px;
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .roster-main {
+        flex: 1;
+        min-width: 0;
+    }
+
+    .roster-name {
+        font-size: 0.8rem;
+        line-height: 1.2;
+    }
+
+    .roster-meta {
+        font-size: 0.66rem;
+        line-height: 1.2;
+    }
+
+    .roster-actions {
+        width: auto;
+        flex: 0 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: flex-end;
+        gap: 6px;
+    }
+
+    .roster-actions .btn-action {
+        width: auto;
+        min-height: 34px;
+        padding: 6px 8px;
+        font-size: 0.66rem;
+        justify-content: center;
+        white-space: nowrap;
+    }
+
+    .queue-item-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        padding-left: 0;
+        justify-content: stretch;
+        gap: 8px;
+    }
+
+    .queue-item-actions .btn-action {
+        min-height: 42px;
+        padding: 8px 10px;
+        font-size: 0.76rem;
+    }
+
+    .court-actions {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+    }
+
+    .court-actions .btn {
+        min-height: 44px;
+        width: 100%;
+        padding: 10px 12px;
+        font-size: 0.78rem;
+        white-space: normal;
+    }
+
+    .court-actions .btn:only-child {
+        grid-column: 1 / -1;
+    }
+
+    .player-picker-modal .picker-search input {
+        min-height: 48px;
+        font-size: 1rem;
+    }
+
+    .player-picker-modal .player-picker-list {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 8px;
+        max-height: min(42vh, 320px);
+    }
+
+    .player-picker-list .picker-player-btn {
+        min-height: 44px;
+        padding: 10px 12px;
+        font-size: 0.82rem;
+    }
+
+    .modal-overlay {
+        align-items: flex-end;
+        padding: 12px;
+    }
+
+    .modal {
+        width: 100%;
+        max-width: none;
+        max-height: 88vh;
+        overflow-y: auto;
+        border-radius: 22px;
+        padding: 20px 16px calc(16px + env(safe-area-inset-bottom));
+    }
+
+    .modal-header h3 {
+        line-height: 1.3;
+    }
+
+    .footer {
+        padding: 18px 12px calc(18px + env(safe-area-inset-bottom));
+    }
+}
+
+@media (max-width: 480px) {
+    .header-content {
+        padding: 10px 12px;
+    }
+
+    #queueCount {
+        width: 100%;
+        min-width: 0;
+        padding: 11px 12px;
+    }
+
+    .queue-count-value {
+        font-size: 1.35rem;
+    }
+
+    .queue-count-breakdown {
+        width: 100%;
+    }
+
+    .logo {
+        gap: 8px;
+        align-items: flex-start;
+    }
+
+    .logo h1 {
+        font-size: 0.96rem;
+    }
+
+    .logo-icon {
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
+        font-size: 1.45rem;
+    }
+
+    .subtitle {
+        display: none;
+    }
+
+    .header-kicker,
+    .section-kicker {
+        font-size: 0.58rem;
+        padding: 3px 8px;
+    }
+
+    .header-stats {
+        width: 100%;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .presence-status-badge,
+    .sync-status-badge {
+        flex: 0 1 auto;
+        width: auto;
+        max-width: calc(50% - 4px);
+        padding: 5px 9px;
+        gap: 6px;
+        border-radius: 10px;
+    }
+
+    .presence-status-detail,
+    .sync-status-detail {
+        display: none;
+    }
+
+    .presence-status-label,
+    .sync-status-label {
+        font-size: 0.68rem;
+        line-height: 1;
+        white-space: nowrap;
+    }
+
+    .section-description {
+        font-size: 0.74rem;
+    }
+
+    .presence-status-dot,
+    .sync-status-dot {
+        width: 7px;
+        height: 7px;
+    }
+
+    .stat-badge {
+        padding: 8px 10px;
+        border-radius: 12px;
+    }
+
+    .stat-number {
+        font-size: 0.95rem;
+    }
+
+    .main-content {
+        padding: 10px;
+    }
+
+    body.admin-mobile-tabs-active .admin-mobile-tabs {
+        top: 10px;
+        margin-bottom: 10px;
+        padding: 6px;
+        border-radius: 16px;
+    }
+
+    .section {
+        padding: 14px;
+    }
+
+    .queue-item {
+        padding: 12px;
+    }
+
+    .queue-item-shell {
+        flex-basis: calc(100% - 54px);
+    }
+
+    .queue-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 0.8rem;
+    }
+
+    .queue-item-actions .btn-action {
+        flex-basis: auto;
+    }
+
+    .queue-item-actions {
+        padding-left: 0;
+    }
+
+    .courts-section .section-description {
+        display: none;
+    }
+
+    .admin-mobile-tools-header .section-description {
+        display: block;
+    }
+
+    .court-header {
+        padding: 14px 14px 10px;
+        gap: 8px;
+    }
+
+    .court-title {
+        gap: 8px;
+    }
+
+    .court-icon {
+        width: 36px;
+        height: 36px;
+        border-radius: 12px;
+        font-size: 0.94rem;
+    }
+
+    .court-name {
+        font-size: 0.9rem;
+    }
+
+    .court-card.active .court-name {
+        font-size: 0.96rem;
+    }
+
+    .court-side-meta {
+        gap: 6px;
+    }
+
+    .court-side-meta > * {
+        min-height: 30px;
+        padding: 0 10px;
+    }
+
+    .court-body.active,
+    .court-body.waiting {
+        padding: 0 14px 12px;
+        gap: 8px;
+    }
+
+    .court-body.idle {
+        padding: 0 14px 12px;
+    }
+
+    .court-team-column {
+        padding: 10px 9px;
+        border-radius: 16px;
+        gap: 6px;
+    }
+
+    .court-team-label {
+        font-size: 0.52rem;
+    }
+
+    .player-tag {
+        font-size: 0.78rem;
+    }
+
+    .player-tag + .player-tag::before {
+        margin: 0 5px 0 3px;
+    }
+
+    .court-vs-pill {
+        min-width: 34px;
+        min-height: 34px;
+        font-size: 0.54rem;
+    }
+
+    .court-card.active .court-timer {
+        font-size: 0.86rem;
+    }
+
+    .courts-section .section-header .btn {
+        min-height: 42px;
+    }
+
+    .waiting-slot {
+        min-height: 40px;
+        font-size: 0.68rem;
+    }
+
+    .court-actions {
+        gap: 6px;
+        align-items: stretch;
+    }
+
+    .court-actions .btn {
+        min-height: 42px;
+        padding: 9px 8px;
+        font-size: 0.68rem;
+    }
+
+    .history-page-title {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .history-page-title .section-heading {
+        flex-basis: auto;
+    }
+
+    .history-page-title .btn {
+        width: 100%;
+    }
+
+    .slide-menu {
+        width: 100%;
+        max-width: none;
+        right: -100%;
+        border-left: none;
+    }
+
+    .game-mode-toggle {
+        flex-direction: column;
+        align-items: stretch;
+    }
+
+    .toggle-group {
+        justify-content: center;
+    }
+
+    .header-status-row {
+        grid-template-columns: 1fr;
+    }
+
+    .presence-status-badge,
+    .sync-status-badge {
+        width: 100%;
+        max-width: none;
+    }
+
+    .queue-item {
+        gap: 8px;
+    }
+
+    .queue-item-shell {
+        flex-basis: 100%;
+    }
+
+    .queue-topline {
+        align-items: flex-start;
+    }
+
+    .queue-meta {
+        width: 100%;
+    }
+
+    .queue-item-actions,
+    .court-actions {
+        grid-template-columns: 1fr;
+    }
+
+    .court-actions {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .court-card.active .court-actions .btn {
+        min-height: 40px;
+        padding: 8px 7px;
+        font-size: 0.66rem;
+    }
+
+    .player-roster-list {
+        max-height: min(46vh, 360px);
+    }
+
+    .roster-item {
+        grid-template-columns: minmax(0, 1fr) auto;
+        align-items: center;
+        padding: 8px 9px;
+    }
+
+    .roster-actions {
+        width: auto;
+        display: flex;
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 5px;
+        flex-wrap: nowrap;
+    }
+
+    .roster-actions .btn-action {
+        min-height: 30px;
+        padding: 5px 7px;
+        font-size: 0.62rem;
+        white-space: nowrap;
+    }
+
+    .player-picker-modal .player-picker-list {
+        grid-template-columns: 1fr;
+    }
+
+    .modal-overlay {
+        padding: 0;
+    }
+
+    .modal {
+        max-height: 90vh;
+        border-radius: 20px 20px 0 0;
+    }
+}
+
+ .admin-mobile-tabs {
+    display: none;
+}
+
+@media (max-width: 768px) {
+    .queue-item {
+        align-items: center !important;
+    }
+
+    .queue-item-shell {
+        flex-wrap: nowrap !important;
+        align-items: center !important;
+        gap: 6px !important;
+    }
+
+    .queue-main {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+    }
+
+    .queue-topline {
+        width: 100% !important;
+        align-items: center !important;
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+    }
+
+    .queue-name {
+        flex: 1 1 auto !important;
+        min-width: 0 !important;
+        overflow: hidden !important;
+        text-overflow: ellipsis !important;
+        white-space: nowrap !important;
+        overflow-wrap: normal !important;
+        font-size: clamp(0.72rem, 2.8vw, 0.88rem) !important;
+    }
+
+    .queue-meta {
+        width: auto !important;
+        flex: 0 1 auto !important;
+        min-width: 0 !important;
+        flex-wrap: nowrap !important;
+        gap: 4px !important;
+    }
+
+    .queue-type-badge,
+    .queue-time,
+    .team-badge {
+        white-space: nowrap !important;
+        font-size: clamp(0.52rem, 2vw, 0.66rem) !important;
+    }
+
+    .queue-item-actions {
+        width: auto !important;
+        padding-left: 0 !important;
+        display: flex !important;
+        flex-wrap: nowrap !important;
+        justify-content: flex-end !important;
+        align-items: center !important;
+        gap: 4px !important;
+        margin-left: auto !important;
+    }
+
+    .queue-item-actions .btn-action {
+        min-height: 32px !important;
+        padding: 5px 7px !important;
+        font-size: clamp(0.58rem, 2.2vw, 0.7rem) !important;
+        flex: 0 1 auto !important;
+    }
+
+    .queue-topline .drag-handle {
+        margin-right: 2px !important;
+    }
+}

@@ -1,0 +1,220 @@
+﻿    .slide-menu-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    width: 100%;
+    padding: 14px 16px;
+    background: transparent;
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.95rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    margin-bottom: 8px;
+}
+
+.slide-menu-item:hover {
+    background: rgba(255, 255, 255, 0.05);
+    border-color: rgba(255, 255, 255, 0.15);
+    transform: translateX(-4px);
+}
+
+.slide-menu-item.active {
+    background: rgba(139, 92, 246, 0.12);
+    border-color: rgba(139, 92, 246, 0.25);
+}
+
+.menu-icon {
+    font-size: 1.2rem;
+}
+
+.menu-count-badge {
+    margin-left: auto;
+    min-width: 28px;
+    padding: 4px 8px;
+    border-radius: 999px;
+    background: rgba(139, 92, 246, 0.14);
+    color: #c4b5fd;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-align: center;
+}
+
+.history-page-header {
+    align-items: center;
+}
+
+.history-page-title {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.history-page-section .history-list {
+    max-height: none;
+    min-height: 50vh;
+}
+
+/* ===== Admin Password Modal ===== */
+.admin-password-modal {
+    max-width: 400px;
+}
+
+.password-input-group {
+    margin-top: 16px;
+}
+
+.password-input-group input {
+    width: 100%;
+    padding: 12px 16px;
+    background: var(--bg-input);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 1rem;
+    letter-spacing: 4px;
+    text-align: center;
+    transition: border-color var(--transition-fast);
+}
+
+.password-input-group input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 15px rgba(139, 92, 246, 0.2);
+}
+
+.password-error {
+    color: #f87171;
+    font-size: 0.85rem;
+    margin-top: 10px;
+    text-align: center;
+    animation: shake 0.4s ease-in-out;
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    20%, 60% { transform: translateX(-6px); }
+    40%, 80% { transform: translateX(6px); }
+}
+
+.btn-swap-players {
+    background: rgba(245, 158, 11, 0.1);
+    color: #fbbf24;
+    border: 1px solid rgba(245, 158, 11, 0.3);
+}
+
+.btn-swap-players:hover {
+    background: rgba(245, 158, 11, 0.2);
+    border-color: rgba(245, 158, 11, 0.5);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.18);
+}
+
+.court-card.active .court-actions {
+    flex-wrap: wrap;
+}
+
+.court-card.active .court-actions .btn {
+    flex: 1 1 calc(50% - 4px);
+}
+
+.court-swap-modal {
+    max-width: 560px;
+}
+
+.court-swap-groups {
+    display: flex;
+    gap: 12px;
+    margin-top: 16px;
+}
+
+.court-swap-team {
+    flex: 1;
+    padding: 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+}
+
+.court-swap-team-title {
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+}
+
+.court-swap-team-title.team-a {
+    color: #f87171;
+}
+
+.court-swap-team-title.team-b {
+    color: #60a5fa;
+}
+
+.court-swap-team-list {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+}
+
+.court-swap-player {
+    width: 100%;
+    padding: 12px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 2px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: var(--text-primary);
+    font-family: var(--font-family);
+    font-size: 0.9rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all var(--transition-fast);
+    text-align: left;
+}
+
+.court-swap-player:hover {
+    transform: translateY(-1px);
+}
+
+.court-swap-player.team-a:hover,
+.court-swap-player.team-a.selected {
+    border-color: rgba(239, 68, 68, 0.5);
+    background: rgba(239, 68, 68, 0.12);
+    color: #fda4af;
+}
+
+.court-swap-player.team-b:hover,
+.court-swap-player.team-b.selected {
+    border-color: rgba(59, 130, 246, 0.5);
+    background: rgba(59, 130, 246, 0.12);
+    color: #93c5fd;
+}
+
+.court-swap-preview {
+    margin-top: 16px;
+    padding: 14px 16px;
+    background: rgba(99, 102, 241, 0.08);
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: var(--border-radius-sm);
+}
+
+.court-swap-preview-label {
+    font-size: 0.75rem;
+    color: var(--text-muted);
+    margin-bottom: 4px;
+}
+
+.court-swap-preview-value {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+@media (max-width: 768px) {
+    .court-swap-groups {
+        flex-direction: column;
+    }
+}
