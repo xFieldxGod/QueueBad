@@ -86,8 +86,8 @@ export class App {
         this._initSortable();
 
         // à¸£à¸±à¸šà¸‚à¹‰à¸­à¸¡à¸¹à¸¥à¸­à¸±à¸›à¹€à¸”à¸•à¹à¸šà¸šà¹€à¸£à¸µà¸¢à¸¥à¹„à¸—à¸¡à¹Œ (à¹€à¸¡à¸·à¹ˆà¸­à¹€à¸žà¸·à¹ˆà¸­à¸™/à¹€à¸„à¸£à¸·à¹ˆà¸­à¸‡à¸­à¸·à¹ˆà¸™à¹à¸à¹‰à¹„à¸‚à¸­à¸°à¹„à¸£)
-        this.storage.onRemoteChange((newState) => {
-            this._handleRemoteUpdate(newState);
+        this.storage.onRemoteChange((payload) => {
+            this._handleRemoteUpdate(payload);
         });
     }
 
@@ -125,7 +125,9 @@ export class App {
         }
     }
 
-    _handleRemoteUpdate(newState) {
+    _handleRemoteUpdate(payload) {
+        const newState = payload?.state || payload;
+        const updatedByCurrentViewer = payload?.meta?.updatedBy === this.storage.viewerId;
         if (!newState) return;
 
         const previousHistoryCount = this.history.count;
@@ -139,8 +141,10 @@ export class App {
         this._render();
         this._resumeTimers();
 
-        this.toast.info('มีการอัปเดตจากอุปกรณ์อื่น', '🔄');
-        this.renderer.highlightQueueCount('info');
+        if (!updatedByCurrentViewer) {
+            this.toast.info('มีการอัปเดตจากอุปกรณ์อื่น', '🔄');
+            this.renderer.highlightQueueCount('info');
+        }
 
         if (this.history.count > previousHistoryCount) {
             this.renderer.highlightHistoryItem(0, 'info');

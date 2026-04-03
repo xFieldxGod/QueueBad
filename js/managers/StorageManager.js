@@ -62,9 +62,30 @@ export class StorageManager {
         }
     }
 
+    _attachMeta(state) {
+        return {
+            ...state,
+            __meta: {
+                updatedBy: this.viewerId,
+                updatedAt: new Date().toISOString(),
+            },
+        };
+    }
+
+    _stripMeta(state) {
+        if (!state || typeof state !== 'object') {
+            return null;
+        }
+
+        const { __meta, ...cleanState } = state;
+        return cleanState;
+    }
+
     async save(state) {
+        const stateWithMeta = this._attachMeta(state);
+
         try {
-            localStorage.setItem(this.key, JSON.stringify(state));
+            localStorage.setItem(this.key, JSON.stringify(stateWithMeta));
             if (!this.supabase && !this.isProcessingRemote) {
                 this._setSyncStatus('local', 'บันทึกในเครื่อง', 'บันทึกล่าสุดแล้ว');
             }
@@ -77,7 +98,7 @@ export class StorageManager {
             try {
                 const { error } = await this.supabase
                     .from('gamestate')
-                    .update({ state_data: state })
+                    .update({ state_data: stateWithMeta })
                     .eq('id', 1);
 
                 if (error) throw error;
@@ -101,7 +122,7 @@ export class StorageManager {
                 if (data && data.state_data) {
                     localStorage.setItem(this.key, JSON.stringify(data.state_data));
                     this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
-                    return data.state_data;
+                    return this._stripMeta(data.state_data);
                 }
 
                 this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
@@ -112,7 +133,7 @@ export class StorageManager {
 
         try {
             const saved = localStorage.getItem(this.key);
-            return saved ? JSON.parse(saved) : null;
+            return saved ? this._stripMeta(JSON.parse(saved)) : null;
         } catch {
             return null;
         }
@@ -158,14 +179,19 @@ export class StorageManager {
                 { event: 'UPDATE', schema: 'public', table: 'gamestate', filter: 'id=eq.1' },
                 (payload) => {
                     const newState = payload.new.state_data;
-                    if (this.onRemoteChangeCallback && newState) {
-                        this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'รับอัปเดตจากอุปกรณ์อื่นแล้ว');
-                        this.isProcessingRemote = true;
-                        this.onRemoteChangeCallback(newState);
-                        setTimeout(() => {
-                            this.isProcessingRemote = false;
-                        }, 500);
+                    if (!this.onRemoteChangeCallback || !newState) {
+                        return;
                     }
+
+                    this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'รับอัปเดตล่าสุดแล้ว');
+                    this.isProcessingRemote = true;
+                    this.onRemoteChangeCallback({
+                        state: this._stripMeta(newState),
+                        meta: newState.__meta || null,
+                    });
+                    setTimeout(() => {
+                        this.isProcessingRemote = false;
+                    }, 500);
                 }
             )
             .on('presence', { event: 'sync' }, () => {
@@ -181,7 +207,7 @@ export class StorageManager {
                 if (status === 'SUBSCRIBED') {
                     this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
                     this._trackPresence();
-                    console.log('🟢 Supabase Realtime Connected!');
+                    console.log('Supabase Realtime Connected');
                     return;
                 }
 
