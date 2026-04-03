@@ -117,7 +117,7 @@ export class App {
                         
                         const slot = this.queue.slots[evt.newIndex];
                         if (slot) {
-                            this.toast.info(`à¸¢à¹‰à¸²à¸¢à¸„à¸´à¸§ "${slot.displayName}" à¹€à¸£à¸µà¸¢à¸šà¸£à¹‰à¸­à¸¢`, 'â†•ï¸');
+                            this.toast.info(`ย้ายคิว "${slot.displayName}" เรียบร้อย`, '↕️');
                         }
                     }
                 }
@@ -139,7 +139,7 @@ export class App {
         this._render();
         this._resumeTimers();
 
-        this.toast.info('à¸¡à¸µà¸à¸²à¸£à¸­à¸±à¸›à¹€à¸”à¸•à¸ˆà¸²à¸à¸­à¸¸à¸›à¸à¸£à¸“à¹Œà¸­à¸·à¹ˆà¸™', 'ðŸ”„');
+        this.toast.info('มีการอัปเดตจากอุปกรณ์อื่น', '🔄');
         this.renderer.highlightQueueCount('info');
 
         if (this.history.count > previousHistoryCount) {
@@ -350,7 +350,7 @@ export class App {
         if (court) {
             this.renderer.highlightCourt(court.id, 'success');
         }
-        this.toast.success('à¹€à¸žà¸´à¹ˆà¸¡à¸ªà¸™à¸²à¸¡à¹ƒà¸«à¸¡à¹ˆà¹à¸¥à¹‰à¸§', 'ðŸŸï¸');
+        this.toast.success('เพิ่มสนามใหม่แล้ว', '🏟️');
     }
 
     /** à¸¥à¸šà¸ªà¸™à¸²à¸¡ */
@@ -359,28 +359,28 @@ export class App {
         if (!court) return;
 
         if (court.isActive || court.isWaiting) {
-            this.toast.error('à¹„à¸¡à¹ˆà¸ªà¸²à¸¡à¸²à¸£à¸–à¸¥à¸šà¸ªà¸™à¸²à¸¡à¸—à¸µà¹ˆà¸à¸³à¸¥à¸±à¸‡à¹ƒà¸Šà¹‰à¸‡à¸²à¸™');
+            this.toast.error('ไม่สามารถลบสนามที่กำลังใช้งาน');
             return;
         }
 
-        this.modal.show('à¸¥à¸šà¸ªà¸™à¸²à¸¡', `à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¸š "${court.name}" à¹ƒà¸Šà¹ˆà¹„à¸«à¸¡?`, () => {
+        this.modal.show('ลบสนาม', `ต้องการลบ "${court.name}" ใช่ไหม?`, () => {
             this.courts.removeCourt(courtId);
             this._renderCourts();
             this._updateStats();
             this._saveState();
             this.renderer.highlightQueueCount('warning');
-            this.toast.info(`à¸¥à¸š "${court.name}" à¹à¸¥à¹‰à¸§`, 'ðŸ—‘ï¸');
+            this.toast.info(`ลบ "${court.name}" แล้ว`, '🗑️');
         });
     }
 
     /** à¸¥à¹‰à¸²à¸‡à¸›à¸£à¸°à¸§à¸±à¸•à¸´ */
     clearHistory() {
-        this.modal.show('à¸¥à¹‰à¸²à¸‡à¸›à¸£à¸°à¸§à¸±à¸•à¸´', 'à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¹‰à¸²à¸‡à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸à¸²à¸£à¹€à¸¥à¹ˆà¸™à¸—à¸±à¹‰à¸‡à¸«à¸¡à¸”à¹ƒà¸Šà¹ˆà¹„à¸«à¸¡?', () => {
+        this.modal.show('ล้างประวัติ', 'ต้องการล้างประวัติการเล่นทั้งหมดใช่ไหม?', () => {
             this.history.clear();
             this._renderHistory();
             this._saveState();
             this.renderer.highlightQueueCount('warning');
-            this.toast.info('à¸¥à¹‰à¸²à¸‡à¸›à¸£à¸°à¸§à¸±à¸•à¸´à¹à¸¥à¹‰à¸§', 'ðŸ—‘ï¸');
+            this.toast.info('ล้างประวัติแล้ว', '🗑️');
         });
     }
 
@@ -388,8 +388,8 @@ export class App {
         const item = this.history.items[index];
         if (!item) return;
 
-        const label = item.court ? `à¸‚à¸­à¸‡ ${item.court}` : 'à¸£à¸²à¸¢à¸à¸²à¸£à¸™à¸µà¹‰';
-        this.modal.show('à¸¥à¸šà¸›à¸£à¸°à¸§à¸±à¸•à¸´', `à¸•à¹‰à¸­à¸‡à¸à¸²à¸£à¸¥à¸šà¸›à¸£à¸°à¸§à¸±à¸•à¸´${label}à¹ƒà¸Šà¹ˆà¹„à¸«à¸¡?`, () => {
+        const label = item.court ? `ของ ${item.court}` : 'รายการนี้';
+        this.modal.show('ลบประวัติ', `ต้องการลบประวัติ${label}ใช่ไหม?`, () => {
             const removedItem = this.history.removeAt(index);
             if (!removedItem) return;
 
@@ -398,20 +398,20 @@ export class App {
             if (this.history.count > 0) {
                 this.renderer.highlightHistoryItem(Math.min(index, this.history.count - 1), 'warning');
             }
-            this.toast.info('à¸¥à¸šà¸›à¸£à¸°à¸§à¸±à¸•à¸´à¸£à¸²à¸¢à¸à¸²à¸£à¹à¸¥à¹‰à¸§', 'ðŸ—‘ï¸');
+            this.toast.info('ลบประวัติรายการแล้ว', '🗑️');
         });
     }
 
-    openRenamePlayer(oldName, contextLabel = 'à¸œà¸¹à¹‰à¹€à¸¥à¹ˆà¸™') {
+    openRenamePlayer(oldName, contextLabel = 'ผู้เล่น') {
         if (!oldName) return;
 
         this.playerRenameModal.show(
-            '✏️ แก้ไขà¸œà¸¹à¹‰à¹€à¸¥à¹ˆà¸™',
-            `à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸Šà¸·à¹ˆà¸­ ${contextLabel} à¸ˆà¸²à¸ "${oldName}"`,
+            '✏️ แก้ไขผู้เล่น',
+            `เปลี่ยนชื่อ ${contextLabel} จาก "${oldName}"`,
             oldName,
             (newName) => this.renamePlayer(oldName, newName),
             {
-                confirmText: 'à¸šà¸±à¸™à¸—à¸¶à¸à¸Šà¸·à¹ˆà¸­',
+                confirmText: 'บันทึกชื่อ',
             }
         );
     }
@@ -420,15 +420,15 @@ export class App {
         const trimmedName = (newName || '').trim();
 
         if (!trimmedName) {
-            return 'à¸à¸£à¸¸à¸“à¸²à¸žà¸´à¸¡à¸žà¹Œà¸Šà¸·à¹ˆà¸­à¸œà¸¹à¹‰à¹€à¸¥à¹ˆà¸™';
+            return 'กรุณาพิมพ์ชื่อผู้เล่น';
         }
 
         if (trimmedName === oldName) {
-            return 'à¸Šà¸·à¹ˆà¸­à¹ƒà¸«à¸¡à¹ˆà¸•à¹‰à¸­à¸‡à¹„à¸¡à¹ˆà¸‹à¹‰à¸³à¸Šà¸·à¹ˆà¸­à¹€à¸”à¸´à¸¡';
+            return 'ชื่อใหม่ต้องไม่ซ้ำชื่อเดิม';
         }
 
         if (this._hasPlayerNameConflict(trimmedName, oldName)) {
-            return `"${trimmedName}" à¸–à¸¹à¸à¹ƒà¸Šà¹‰à¸‡à¸²à¸™à¸­à¸¢à¸¹à¹ˆà¹à¸¥à¹‰à¸§`;
+            return `"${trimmedName}" ถูกใช้งานอยู่แล้ว`;
         }
 
         this.queue.renamePlayer(oldName, trimmedName);
@@ -441,7 +441,7 @@ export class App {
 
         this._render();
         this._saveState();
-        this.toast.success(`à¹€à¸›à¸¥à¸µà¹ˆà¸¢à¸™à¸Šà¸·à¹ˆà¸­ "${oldName}" à¹€à¸›à¹‡à¸™ "${trimmedName}" à¹à¸¥à¹‰à¸§`, 'âœï¸');
+        this.toast.success(`เปลี่ยนชื่อ "${oldName}" เป็น "${trimmedName}" แล้ว`, '✏️');
         return true;
     }
 
@@ -459,12 +459,12 @@ export class App {
         }
 
         this.modal.show(
-            'à¸ªà¹ˆà¸‡à¸¥à¸‡à¸ªà¸™à¸²à¸¡',
-            `à¸ªà¹ˆà¸‡ "${slotA.displayName}" à¸žà¸šà¸à¸±à¸š "${slotB.displayName}" à¸¥à¸‡à¸ªà¸™à¸²à¸¡à¸§à¹ˆà¸²à¸‡à¸•à¸­à¸™à¸™à¸µà¹‰à¹ƒà¸Šà¹ˆà¸«à¸£à¸·à¸­à¹„à¸¡à¹ˆ?`,
+            'ส่งลงสนาม',
+            `ส่ง "${slotA.displayName}" พบกับ "${slotB.displayName}" ลงสนามว่างตอนนี้ใช่หรือไม่?`,
             () => this.match.sendToCourt(),
             {
-                confirmText: 'à¸ªà¹ˆà¸‡à¸¥à¸‡à¸ªà¸™à¸²à¸¡',
-                cancelText: 'à¸¢à¸à¹€à¸¥à¸´à¸',
+                confirmText: 'ส่งลงสนาม',
+                cancelText: 'ยกเลิก',
                 overlayClass: 'send-to-court-overlay',
                 modalClass: 'send-to-court-modal',
             }
@@ -565,14 +565,14 @@ export class App {
         const skillLevel = this.playerSkillInput?.value || 'N';
 
         if (!name) {
-            this.toast.error('à¸à¸£à¸¸à¸“à¸²à¸žà¸´à¸¡à¸žà¹Œà¸Šà¸·à¹ˆà¸­à¸™à¸±à¸à¸à¸µà¸¬à¸²');
+            this.toast.error('กรุณาพิมพ์ชื่อนักกีฬา');
             this.playerNameInput.focus();
             return;
         }
 
         const exists = this.playerRoster.some(player => player.name.toLowerCase() === name.toLowerCase());
         if (exists) {
-            this.toast.error(`"${name}" à¸­à¸¢à¸¹à¹ˆà¹ƒà¸™à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¹à¸¥à¹‰à¸§`);
+            this.toast.error(`"${name}" อยู่ในรายชื่อแล้ว`);
             this.playerNameInput.focus();
             return;
         }
@@ -588,7 +588,7 @@ export class App {
         this.playerNameInput.focus();
         this._renderRoster();
         this._saveState();
-        this.toast.success(`à¹€à¸žà¸´à¹ˆà¸¡ "${name}" à¸¥à¸‡à¸£à¸²à¸¢à¸Šà¸·à¹ˆà¸­à¸™à¸±à¸à¸à¸µà¸¬à¸²à¹à¸¥à¹‰à¸§`);
+        this.toast.success(`เพิ่ม "${name}" ลงรายชื่อนักกีฬาแล้ว`);
     }
 
     applyRosterSearch(query = null) {

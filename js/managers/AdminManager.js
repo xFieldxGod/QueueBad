@@ -83,12 +83,6 @@ export class AdminManager {
         if (menuAdminLogin) {
             menuAdminLogin.addEventListener('click', () => {
                 closeMenu();
-
-                if (false && !this.isAdminAvailable) {
-                    this.app.toast.error('ปิดโหมด Admin บนเว็บสาธารณะแล้ว ให้ใช้งานผ่าน localhost หรือย้ายระบบยืนยันตัวตนไปฝั่งเซิร์ฟเวอร์', '🔒');
-                    return;
-                }
-
                 hidePasswordError();
                 adminPasswordOverlay.classList.add('active');
                 adminPasswordInput.focus();
@@ -191,7 +185,7 @@ export class AdminManager {
         const digest = await window.crypto.subtle.digest('SHA-256', encoded);
 
         return Array.from(new Uint8Array(digest))
-            .map(byte => byte.toString(16).padStart(2, '0'))
+            .map((byte) => byte.toString(16).padStart(2, '0'))
             .join('');
     }
 }

@@ -1,10 +1,9 @@
 // ===========================
-// 💾 StorageManager (Supabase Realtime + LocalStorage Fallback)
+// StorageManager (Supabase Realtime + LocalStorage Fallback)
 // ===========================
 
-// ⚡ จุดตั้งค่า Supabase
-const SUPABASE_URL = "https://qxaeaanesrhpbjnmlddg.supabase.co"; // <--- นำค่าจากหน้า Settings > API > Project URL มาใส่ที่นี่
-const SUPABASE_KEY = "sb_publishable_u9o4KNuwui78Ul-LhKwL4A_FBMqEBdy"; 
+const SUPABASE_URL = 'https://qxaeaanesrhpbjnmlddg.supabase.co';
+const SUPABASE_KEY = 'sb_publishable_u9o4KNuwui78Ul-LhKwL4A_FBMqEBdy';
 const REMOTE_SYNC_ENABLED = true;
 const IS_LOCAL_DEVELOPMENT = ['localhost', '127.0.0.1'].includes(window.location.hostname);
 
@@ -30,7 +29,7 @@ export class StorageManager {
             REMOTE_SYNC_ENABLED &&
             window.supabase &&
             SUPABASE_URL &&
-            SUPABASE_URL.includes('[กรุณาใส่') === false
+            !SUPABASE_URL.includes('[กรุณาใส่')
         );
         this.syncStatus = {
             state: 'local',
@@ -38,7 +37,6 @@ export class StorageManager {
             detail: 'อุปกรณ์นี้เท่านั้น',
         };
 
-        // เชื่อมต่อ Supabase
         if (IS_LOCAL_DEVELOPMENT) {
             this._setSyncStatus('local', 'บันทึกในเครื่อง', 'โหมดพัฒนาในเครื่อง');
             this._setPresenceInfo(null, false, 'local');
@@ -48,10 +46,10 @@ export class StorageManager {
             try {
                 this.supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
                 this._subscribeToChanges();
-            } catch (e) {
+            } catch (error) {
                 this._setSyncStatus('offline', 'ออฟไลน์', 'เชื่อมต่อ Supabase ไม่สำเร็จ');
                 this._setPresenceInfo(null, false, 'offline');
-                console.warn('[Supabase] createClient failed:', e);
+                console.warn('[Supabase] createClient failed:', error);
                 this.supabase = null;
             }
         } else if (!REMOTE_SYNC_ENABLED) {
@@ -60,25 +58,20 @@ export class StorageManager {
         } else {
             this._setSyncStatus('local', 'บันทึกในเครื่อง', 'ยังไม่ได้ตั้งค่าออนไลน์');
             this._setPresenceInfo(null, false, 'local');
-            console.warn("[Supabase] ยังไม่ได้ใส่ Project URL ระบบจะทำงานแบบออฟไลน์ (ดูได้เฉพาะเครื่องนี้) ผ่าน LocalStorage ไปก่อน");
+            console.warn('[Supabase] ยังไม่ได้ใส่ Project URL ระบบจะทำงานแบบออฟไลน์ผ่าน LocalStorage ไปก่อน');
         }
     }
 
-    /**
-     * บันทึกข้อมูลลงทั้ง LocalStorage (สำรอง) และ Supabase (หลัก)
-     */
     async save(state) {
-        // ออฟไลน์ 
         try {
             localStorage.setItem(this.key, JSON.stringify(state));
             if (!this.supabase && !this.isProcessingRemote) {
                 this._setSyncStatus('local', 'บันทึกในเครื่อง', 'บันทึกล่าสุดแล้ว');
             }
-        } catch(e) {
-            console.error('Failed to reserve state locally:', e);
+        } catch (error) {
+            console.error('Failed to save state locally:', error);
         }
 
-        // ออนไลน์
         if (this.supabase && !this.isProcessingRemote) {
             this._setSyncStatus('syncing', 'กำลังซิงก์', 'กำลังบันทึกข้อมูลล่าสุด');
             try {
@@ -86,67 +79,56 @@ export class StorageManager {
                     .from('gamestate')
                     .update({ state_data: state })
                     .eq('id', 1);
-                
+
                 if (error) throw error;
                 this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'ข้อมูลล่าสุดถูกบันทึกแล้ว');
-            } catch (e) {
-                this._disableRemoteSync('บันทึกข้อมูลออนไลน์ไม่สำเร็จ ระบบจะกลับไปใช้ LocalStorage อย่างเดียว', e);
+            } catch (error) {
+                this._disableRemoteSync('บันทึกข้อมูลออนไลน์ไม่สำเร็จ ระบบจะกลับไปใช้ LocalStorage อย่างเดียว', error);
             }
         }
     }
 
-    /**
-     * ดึงข้อมูลตอนเปิดเว็บครั้งแรก โหลดจาก Supabase ก่อน
-     */
     async load() {
         if (this.supabase) {
             this._setSyncStatus('syncing', 'กำลังซิงก์', 'กำลังโหลดข้อมูลล่าสุด');
             try {
-                const { data, error } = await this.supabase
+                const { data } = await this.supabase
                     .from('gamestate')
                     .select('state_data')
                     .eq('id', 1)
                     .single();
-                
+
                 if (data && data.state_data) {
-                    // แบคอัพออฟไลน์
                     localStorage.setItem(this.key, JSON.stringify(data.state_data));
                     this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
                     return data.state_data;
                 }
 
                 this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
-            } catch (e) {
-                this._disableRemoteSync('โหลดข้อมูลออนไลน์ไม่สำเร็จ ระบบจะใช้ข้อมูล LocalStorage แทน', e);
+            } catch (error) {
+                this._disableRemoteSync('โหลดข้อมูลออนไลน์ไม่สำเร็จ ระบบจะใช้ข้อมูล LocalStorage แทน', error);
             }
         }
 
-        // ดึงจาก LocalStorage กรณีเน็ตหลุด / ไม่ได้ใช้ Supabase
         try {
             const saved = localStorage.getItem(this.key);
             return saved ? JSON.parse(saved) : null;
-        } catch (e) {
+        } catch {
             return null;
         }
     }
 
-    /** ล้าง state */
     clear() {
         localStorage.removeItem(this.key);
-        // Supabase ก็ให้เซฟค่าว่างเปล่าทับ
         this.save({ queue: [], courts: [], history: [], courtIdCounter: 1 });
     }
 
-    /** 
-     * ฟังก์ชั่นสำหรับตั้งค่าสิ่งที่จะทำเมื่อมีอัปเดตจากคนอื่นหลุดเข้ามา
-     */
     onRemoteChange(callback) {
         this.onRemoteChangeCallback = callback;
     }
 
     onSyncStatusChange(callback) {
         this.onSyncStatusChangeCallback = callback;
-
         if (callback) {
             callback({ ...this.syncStatus });
         }
@@ -154,13 +136,11 @@ export class StorageManager {
 
     onPresenceChange(callback) {
         this.onPresenceChangeCallback = callback;
-
         if (callback) {
             callback({ ...this.presenceInfo });
         }
     }
 
-    /** สมัครรับข้อมูลอัปเดตล่าสุดจากคนอื่นๆ แบบเรียลไทม์ระดับเสี้ยววินาที */
     _subscribeToChanges() {
         if (!this.supabase) return;
 
@@ -180,13 +160,11 @@ export class StorageManager {
                     const newState = payload.new.state_data;
                     if (this.onRemoteChangeCallback && newState) {
                         this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'รับอัปเดตจากอุปกรณ์อื่นแล้ว');
-                        // ป้องกันการเซฟวนลูประหว่างเครื่อง (เราดึงของเค้ามา แล้วดันเซฟทับกลับไป)
-                        this.isProcessingRemote = true; 
-                        
+                        this.isProcessingRemote = true;
                         this.onRemoteChangeCallback(newState);
-                        
-                        // ปลดล็อกให้เซฟได้ปกติหลังอัปเดต UI ของเราเสร็จ
-                        setTimeout(() => { this.isProcessingRemote = false; }, 500); 
+                        setTimeout(() => {
+                            this.isProcessingRemote = false;
+                        }, 500);
                     }
                 }
             )
@@ -200,10 +178,10 @@ export class StorageManager {
                 this._updatePresenceCount();
             })
             .subscribe((status) => {
-                if(status === 'SUBSCRIBED') {
+                if (status === 'SUBSCRIBED') {
                     this._setSyncStatus('online', 'ซิงก์ออนไลน์', 'พร้อมใช้งานหลายอุปกรณ์');
                     this._trackPresence();
-                    console.log("🟢 Supabase Realtime Connected!");
+                    console.log('🟢 Supabase Realtime Connected!');
                     return;
                 }
 
@@ -241,7 +219,6 @@ export class StorageManager {
 
         const presenceState = this.realtimeChannel.presenceState();
         const count = Object.keys(presenceState).length;
-
         this._setPresenceInfo(count, true, 'online');
     }
 
@@ -255,7 +232,6 @@ export class StorageManager {
         }
 
         let nextViewerId;
-
         if (window.crypto?.randomUUID) {
             nextViewerId = window.crypto.randomUUID();
         } else {
@@ -335,6 +311,7 @@ export class StorageManager {
                 }
             }
         }
+
         this._setSyncStatus('offline', 'ออฟไลน์', 'ใช้ LocalStorage ชั่วคราว');
         this._setPresenceInfo(null, false, 'offline');
 

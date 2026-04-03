@@ -77,8 +77,8 @@ export class ShareWebModal {
                 margin: 1,
                 color: {
                     dark: '#f8fafc',
-                    light: '#00000000'
-                }
+                    light: '#00000000',
+                },
             },
             (error) => {
                 if (error) {
