@@ -30,7 +30,7 @@ export class App {
         this.playerPicker = new PlayerPickerModal();
         this.playerRenameModal = new PlayerRenameModal();
         this.courtSwapModal = new CourtSwapModal();
-        this.shareWebUrl = 'https://qbadbyfeeling.netlify.app';
+        this.shareWebUrl = window.location.origin + window.location.pathname;
         this.shareWebModal = new ShareWebModal(this.toast, this.shareWebUrl);
 
         this.admin = new AdminManager(this);
@@ -446,6 +446,7 @@ export class App {
     }
 
     openShareWeb() {
+        this.shareWebUrl = window.location.origin + window.location.pathname;
         this.shareWebModal.show(this.shareWebUrl);
     }
 
