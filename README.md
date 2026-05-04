@@ -2,6 +2,8 @@
 
 > **"แพ้เป็นพระ ชนะเป็นมั้ย"** — จัดการคิวผู้เล่นและสนามแบดมินตันแบบเรียลไทม์
 
+**🌐 ใช้งานได้เลย:** [https://xfieldxgod.github.io/QueueBad/](https://xfieldxgod.github.io/QueueBad/)
+
 ---
 
 ## ภาพรวม
