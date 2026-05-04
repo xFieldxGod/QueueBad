@@ -1,0 +1,86 @@
+﻿/* ===== Share Web Modal ===== */
+.share-web-modal {
+    max-width: 500px;
+}
+
+.share-web-qr-card {
+    margin-top: 18px;
+    padding: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 256px;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.08), rgba(59, 130, 246, 0.06));
+    border: 1px solid rgba(99, 102, 241, 0.18);
+    border-radius: var(--border-radius-sm);
+}
+
+#shareWebQrCanvas {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+#shareWebQrImage {
+    width: 220px;
+    max-width: 100%;
+    height: auto;
+    border-radius: 12px;
+}
+
+.share-web-qr-fallback {
+    text-align: center;
+    color: var(--text-secondary);
+    font-size: 0.88rem;
+}
+
+.share-web-link-group {
+    margin-top: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.share-web-link-label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+}
+
+.share-web-link {
+    display: block;
+    padding: 12px 14px;
+    background: var(--bg-input);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-sm);
+    color: #c4b5fd;
+    text-decoration: none;
+    overflow-wrap: anywhere;
+}
+
+.share-web-link:hover {
+    border-color: rgba(99, 102, 241, 0.4);
+    color: #ddd6fe;
+}
+
+.share-web-actions {
+    flex-wrap: wrap;
+}
+
+@media (max-width: 768px) {
+    .share-web-qr-card {
+        min-height: 220px;
+        padding: 14px;
+    }
+
+    #shareWebQrCanvas {
+        width: min(220px, 100%);
+    }
+
+    #shareWebQrImage {
+        width: min(220px, 100%);
+    }
+}
